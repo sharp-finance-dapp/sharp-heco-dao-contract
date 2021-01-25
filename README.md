@@ -1,4 +1,4 @@
-# sharp-dao-cuntracts 
+# sharp-dao-contracts 
 
 Vyper contracts used in the [Sharp](https://www.sharp.finance/) Governance DAO.
 
