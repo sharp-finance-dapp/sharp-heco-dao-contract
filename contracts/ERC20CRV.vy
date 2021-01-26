@@ -199,8 +199,12 @@ def future_epoch_time_write() -> uint256:
 @view
 def _available_supply() -> uint256:
     if self.mining_epoch == -1 and self.is_boosted == True:
-        start_boost_time: uint256 = self.start_epoch_time + YEAR - WEEK
-        return self.start_epoch_supply + (block.timestamp - start_boost_time) * self.rate
+        start_boost_time: uint256 = self.start_epoch_time + YEAR - BOOST_PERIOD_TIME
+        end_boost_time: uint256 = self.start_epoch_time + YEAR
+        if block.timestamp <= end_boost_time:
+            return self.start_epoch_supply + (block.timestamp - start_boost_time) * self.rate
+        else:
+            return self.start_epoch_supply + BOOST_PERIOD_TIME * self.rate
     return self.start_epoch_supply + (block.timestamp - self.start_epoch_time) * self.rate
 
 @external
