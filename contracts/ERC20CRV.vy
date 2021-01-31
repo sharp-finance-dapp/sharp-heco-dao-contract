@@ -58,9 +58,9 @@ YEAR: constant(uint256) = 86400 * 365
 # left for inflation: 90%
 
 # Supply parameters
-INITIAL_SUPPLY: constant(uint256) = 500_000_00
+INITIAL_SUPPLY: constant(uint256) = 1_000_000_00
 BOOST_RATE: constant(uint256) = 300_000_000 * 52 * 10 ** 18 / YEAR # 30% distribution in the first week if 1 year = 52 weeks
-INITIAL_RATE: constant(uint256) = 250_000_000 * 10 ** 18 / YEAR  
+INITIAL_RATE: constant(uint256) = 220_000_000 * 10 ** 18 / YEAR  
 # INITIAL_RATE: constant(uint256) = 274_815_283 * 10 ** 18 / YEAR  # leading to 43% premine
 RATE_REDUCTION_TIME: constant(uint256) = YEAR
 RATE_REDUCTION_COEFFICIENT: constant(uint256) = 1189207115002721024  # 2 ** (1/4) * 1e18
@@ -208,6 +208,18 @@ def _available_supply() -> uint256:
     return self.start_epoch_supply + (block.timestamp - self.start_epoch_time) * self.rate
 
 @external
+def stop_inflation():
+    """
+    @notice The function can be called by everyone if it meets the requirements
+    @dev Callable by any address, but only once per epoch
+         Total supply becomes slightly larger if this function is called late
+    """
+    assert self.available_supply() >= 1_000_000_000 * (10 ** 18)  # dev: too soon!
+    self.rate = 0
+    self.start_epoch_time =  4070880000  # 2099
+
+
+@external
 @view
 def available_supply() -> uint256:
     """
@@ -229,7 +241,7 @@ def mintable_in_timeframe(start: uint256, end: uint256) -> uint256:
     to_mint: uint256 = 0
     current_epoch_time: uint256 = self.start_epoch_time
     current_rate: uint256 = self.rate
-
+ 
     # Special case if end is in future (not yet minted) epoch
     if end > current_epoch_time + RATE_REDUCTION_TIME:
         current_epoch_time += RATE_REDUCTION_TIME

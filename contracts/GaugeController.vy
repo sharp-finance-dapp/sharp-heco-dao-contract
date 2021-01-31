@@ -271,9 +271,9 @@ def _get_weight(gauge_addr: address) -> uint256:
                 break
             t += WEEK
             d_bias: uint256 = pt.slope * WEEK
-            if pt.bias > d_bias: # true
-                pt.bias -= d_bias # pt.bias
-                d_slope: uint256 = self.changes_weight[gauge_addr][t] # ?
+            if pt.bias > d_bias:
+                pt.bias -= d_bias
+                d_slope: uint256 = self.changes_weight[gauge_addr][t]
                 pt.slope -= d_slope
             else:
                 pt.bias = 0
@@ -359,7 +359,7 @@ def _gauge_relative_weight(addr: address, time: uint256) -> uint256:
     @return Value of relative weight normalized to 1e18
     """
     t: uint256 = time / WEEK * WEEK
-    _total_weight: uint256 = self.points_total[t] 
+    _total_weight: uint256 = self.points_total[t]
 
     if _total_weight > 0:
         gauge_type: int128 = self.gauge_types_[addr] - 1  
